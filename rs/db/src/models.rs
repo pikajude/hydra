@@ -1,3 +1,5 @@
+#![allow(clippy::single_component_path_imports)]
+
 use super::schema::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

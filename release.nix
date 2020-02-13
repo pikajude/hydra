@@ -218,7 +218,7 @@ rec {
       cp -prvd $doc/* $out/share/doc
 
       mkdir $out/nix-support
-      echo "doc rustdoc $out/share/doc/hydra" >> $out/nix-support/hydra-build-products
+      echo "doc rustdoc $out/share/doc hydra/index.html" >> $out/nix-support/hydra-build-products
     '';
 
   tests.install = genAttrs' (system:

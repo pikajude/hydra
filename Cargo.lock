@@ -304,6 +304,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "dirmod"
+version = "0.2.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e718d411cb98d8b5463f1de3e2e9910a476b9ce12afd8bc2e5d774a03217e8f"
+dependencies = [
+ "dirmod-codegen",
+]
+
+[[package]]
+name = "dirmod-codegen"
+version = "0.2.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1fe396ae9eaa3ed10e620aec942375d72f12457b851bdd3859b7590a645cc94"
+dependencies = [
+ "matches",
+ "proc-macro2 1.0.8",
+ "quote 1.0.2",
+ "smallvec 1.2.0",
+ "syn 1.0.14",
+]
+
+[[package]]
 name = "env_logger"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -564,6 +586,8 @@ dependencies = [
  "assert-impl",
  "async-trait",
  "db",
+ "dirmod",
+ "futures",
 ]
 
 [[package]]

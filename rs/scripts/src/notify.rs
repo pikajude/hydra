@@ -1,4 +1,4 @@
-#![feature(try_blocks)]
+#![feature(try_blocks, type_name_of_val)]
 
 #[macro_use]
 extern crate log;
@@ -9,6 +9,7 @@ use futures::stream::{poll_fn, Stream, StreamExt, TryStreamExt};
 use hydra::diesel::prelude::*;
 use hydra::{models::*, schema::*};
 use hydra::{Hydra, Result};
+use std::path::Path;
 use tokio_postgres::{AsyncMessage, NoTls};
 
 mod util;
@@ -139,7 +140,12 @@ impl Notify {
       .find(id)
       .get_result::<Build>(&self.hydra.conn()?)?;
 
-    info!("build_started: {:?}", build);
+    for plugin in self.hydra.plugins() {
+      debug!("{}::build_started", plugin.name());
+      if let Err(e) = plugin.build_started(&build).await {
+        info!("{}::build_started: {}", plugin.name(), e);
+      }
+    }
 
     Ok(())
   }
@@ -157,15 +163,16 @@ impl Notify {
       .filter(builds::id.eq(any(dependents)))
       .get_results::<Build>(&conn)?;
 
+    for plugin in self.hydra.plugins() {
+      debug!("{}::build_finished", plugin.name());
+      if let Err(e) = plugin.build_finished(build, &dependents).await {
+        info!("{}::build_finished: {}", plugin.name(), e);
+      }
+    }
+
     hydra::diesel::update(build)
       .set(builds::notificationpendingsince.eq(<Option<i32>>::None))
       .execute(&conn)?;
-
-    info!("build_finished: {:?}, {:?}", build, dependents);
-
-    for plugin in self.hydra.plugins() {
-      plugin.build_finished(build, &dependents).await?;
-    }
 
     Ok(())
   }
@@ -173,15 +180,18 @@ impl Notify {
   async fn step_finished(&self, id: i32, step_number: i32, log_path: &str) -> Result<()> {
     let conn = self.hydra.conn()?;
 
-    let build = builds::table.find(id).get_result::<Build>(&conn)?;
-
     let step = buildsteps::table
       .find((id, step_number))
       .get_result::<BuildStep>(&conn)?;
 
     let log_path = if log_path == "-" { "" } else { log_path };
 
-    info!("step_finished: {:?}, {:?}, {:?}", build, step, log_path);
+    for plugin in self.hydra.plugins() {
+      debug!("{}::step_finished", plugin.name());
+      if let Err(e) = plugin.step_finished(&step, Path::new(log_path)).await {
+        info!("{}::step_finished: {}", plugin.name(), e);
+      }
+    }
 
     Ok(())
   }
@@ -202,7 +212,7 @@ async fn main() -> Result<()> {
     .get_matches();
 
   let notif = Notify {
-    hydra: Hydra::get()?,
+    hydra: Hydra::get().await?,
     only: matches.value_of("only").map(|x| x.into()),
     once: matches.is_present("once"),
   };

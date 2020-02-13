@@ -7,6 +7,8 @@ edition = "2018"
 [dependencies]
 db = { path = "../db" }
 async-trait = "0.1.24"
+futures = "0.3.4"
+dirmod = "0.2.0-alpha"
 
 [dev-dependencies]
 assert-impl = "0.1.3"

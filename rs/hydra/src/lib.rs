@@ -3,15 +3,17 @@ extern crate async_trait;
 
 pub extern crate db;
 
-mod plugin;
+pub mod plugin;
 
 use db::diesel::{
   r2d2::{ConnectionManager, Pool, PooledConnection},
   PgConnection,
 };
 pub use db::{diesel, models, schema};
-pub use plugin::*;
+use futures::stream::{FuturesUnordered, StreamExt, TryStreamExt};
+use plugin::*;
 use std::collections::HashMap;
+use std::iter::FromIterator;
 use std::sync::Arc;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
@@ -23,13 +25,19 @@ pub struct Hydra {
 }
 
 impl Hydra {
-  pub fn get() -> Result<Self> {
+  pub async fn get() -> Result<Self> {
     let pool = Pool::new(ConnectionManager::new("host=/run/postgresql user=hydra"))?;
-    Ok(Self {
+    let mut hydra = Self {
       plugins: vec![],
       db: pool,
       config: Default::default(),
-    })
+    };
+    hydra.plugins =
+      FuturesUnordered::from_iter(vec![plugin::github_status::GithubStatus::init(&hydra)])
+        .filter_map(|x| async { x.transpose() })
+        .try_collect::<Vec<_>>()
+        .await?;
+    Ok(hydra)
   }
 
   pub fn plugins(&self) -> &[Arc<dyn Plugin>] {

@@ -14,6 +14,7 @@ let
   channel = rustChannelOf {
     date = "2020-02-06";
     channel = "nightly";
+    sha256 = "123mdyzybrz7q81cf537p1nffgy0g2wpyw7f0l2lji35ifnanjxj";
   };
 
 in naersk.buildPackage {

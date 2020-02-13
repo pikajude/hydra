@@ -1,5 +1,5 @@
 [package]
-name = "hydra-server"
+name = "hydra-server-rs"
 version = "0.1.0"
 authors = ["Jude Taylor <jude.taylor@dfinity.org>"]
 edition = "2018"

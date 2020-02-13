@@ -190,7 +190,7 @@ rec {
                 --set NIX_RELEASE ${nix.name or "unknown"}
         done
       '' + lib.optionalString (!shell) ''
-        install -t $out/bin ${rsScripts}/bin/*
+        install -t $out/bin ${rsScripts}/bin/hydra-notify
       '';
 
       dontStrip = true;

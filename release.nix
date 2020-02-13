@@ -61,7 +61,13 @@ rec {
 
       nix = pkgs.nixUnstable or pkgs.nix;
 
-      rsScripts = pkgs.callPackage ./rs {
+      moz-overlay = pkgs.fetchgit {
+        url = https://github.com/mozilla/nixpkgs-mozilla.git;
+        rev = "36455d54de0b40d9432bba6d8207a5582210b3eb";
+        sha256 = "36631f2cc04cddf6491f805f7d50fd6b016f080df843703ecbb0c52b87e68052";
+      };
+
+      rsScripts = (pkgs.extend (import moz-overlay)).callPackage ./rs {
         inherit hydraSrc;
       };
 

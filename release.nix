@@ -196,7 +196,7 @@ rec {
       dontStrip = true;
 
       meta.description = "Build of Hydra on ${system}";
-      passthru.perlDeps = perlDeps;
+      passthru = { inherit perlDeps rsScripts; };
     });
 
   manual = pkgs.runCommand "hydra-manual-${version}"
@@ -208,6 +208,17 @@ rec {
 
       mkdir $out/nix-support
       echo "doc manual $out/share/doc/hydra" >> $out/nix-support/hydra-build-products
+    '';
+
+  rustdoc = pkgs.runCommand "hydra-rustdoc-${version}"
+    { doc = build.x86_64-linux.rsScripts.doc;
+    }
+    ''
+      mkdir -p $out/share/doc
+      cp -prvd $doc/* $out/share/doc
+
+      mkdir $out/nix-support
+      echo "doc rustdoc $out/share/doc/hydra" >> $out/nix-support/hydra-build-products
     '';
 
   tests.install = genAttrs' (system:

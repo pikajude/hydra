@@ -8,8 +8,8 @@ let
       sha256 = "1bgkmfdkf3vsxk16vfv2j14xb1sk7idswqd8iai5lwqq7lxq3cna";
     }
   ) {
-    inherit (channel) cargo;
     rustc = channel.rust;
+    cargo = channel.rust;
   };
   channel = rustChannelOf {
     date = "2020-02-06";
@@ -21,7 +21,7 @@ in naersk.buildPackage {
   name = "hydra-scripts";
   version = "0.1.0";
   src = hydraSrc;
-  doCheck = false;
+  doDoc = true;
 
   buildInputs = [ boost nix.dev postgresql95 ];
 }

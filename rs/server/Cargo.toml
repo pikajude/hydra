@@ -1,0 +1,17 @@
+[package]
+name = "hydra-server"
+version = "0.1.0"
+authors = ["Jude Taylor <jude.taylor@dfinity.org>"]
+edition = "2018"
+
+[dependencies]
+db = { path = "../db" }
+
+rocket = "0.4.2"
+serde_json = "1.0.47"
+serde = "1.0.104"
+
+[dependencies.rocket_contrib]
+version = "0.4.2"
+default-features = false
+features = ["diesel_postgres_pool", "tera_templates", "serve"]

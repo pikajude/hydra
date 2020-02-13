@@ -61,6 +61,10 @@ rec {
 
       nix = pkgs.nixUnstable or pkgs.nix;
 
+      rsScripts = pkgs.callPackage ./rs {
+        inherit hydraSrc;
+      };
+
       perlDeps = buildEnv {
         name = "hydra-perl-deps";
         paths = with perlPackages;
@@ -179,7 +183,9 @@ rec {
                 --set HYDRA_HOME $out/libexec/hydra \
                 --set NIX_RELEASE ${nix.name or "unknown"}
         done
-      ''; # */
+      '' + lib.optionalString (!shell) ''
+        install -t $out/bin ${rsScripts}/bin/*
+      '';
 
       dontStrip = true;
 

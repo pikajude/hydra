@@ -1,0 +1,15 @@
+{% macro make_sub_menu(menu) %}
+<li class="dropdown" {% if menu.id %}id="{{ menu.id }}" {% endif %}>
+  <a class="dropdown-toggle" href="#" data-toggle="dropdown">{{ menu.title }}<b class="caret"></b></a>
+  <ul class="dropdown-menu">
+    {% for item in menu.options %}
+    <li>
+      {% if item.icon %}<i class="{{ item.icon }} icon-black"></i>{% endif %}
+      <a href="{{ item.uri }}">
+        {{ item.title }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</li>
+{% endmacro foo %}

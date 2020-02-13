@@ -1,0 +1,78 @@
+{% import "macros" as macros %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Hydra{% if title %} - {{ title }}{% endif %}</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+  <script type="text/javascript" src="/static/js/jquery/jquery-1.12.3.min.js"></script>
+  <script type="text/javascript" src="/static/js/jquery/jquery-ui-1.10.4.min.js"></script>
+  <script type="text/javascript" src="/static/js/moment/moment-2.24.0.min.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js" />
+  </script>
+  <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+
+  <!-- hydra.css must be included before bootstrap-responsive to
+        make the @media rule work. -->
+  <link rel="stylesheet" href="/static/css/hydra.css" type="text/css" />
+  <link rel="stylesheet" href="/static/css/rotated-th.css" type="text/css" />
+  <link href="/static/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+
+  <style>
+    .popover {
+      max-width: 40%;
+    }
+  </style>
+
+  <script type="text/javascript" src="/static/js/bootbox.min.js"></script>
+
+  <link rel="stylesheet" href="/static/css/tree.css" type="text/css" />
+
+  <script type="text/javascript" src="/static/js/common.js"></script>
+</head>
+
+<body>
+
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="brand" href="{{ home_link | safe }}">
+          {% if logo %}
+          <img src="{{ logo }}" alt="Hydra Logo" class="logo" />
+          {% else %}
+          Hydra
+          {% endif %}
+        </a>
+        <div class="nav-collapse collapse">
+          {% include "topbar" %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="skip-topbar"></div>
+    {% block content %}{% endblock content %}
+
+    <footer class="navbar">
+      <hr />
+      <small>
+        <em><a href="http://nixos.org/hydra" target="_blank">Hydra</a></em>
+      </small>
+    </footer>
+  </div>
+</body>
+
+</html>

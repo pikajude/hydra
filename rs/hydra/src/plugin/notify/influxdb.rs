@@ -106,7 +106,7 @@ fn make_line(
     out.push_str(&format!(",{}={}", k, v));
   }
   out.push(' ');
-  for (i, (k, v)) in fields.into_iter().enumerate() {
+  for (i, (k, v)) in fields.iter().enumerate() {
     out.push_str(&format!("{}{}={}", if i > 0 { "," } else { "" }, k, v));
   }
 

@@ -159,6 +159,10 @@ impl Notify {
       .find(&build.project)
       .get_result::<Project>(&conn)?;
 
+    if project.declfile.is_some() && build.jobset == ".jobsets" && build.iscurrent == Some(1) {
+      util::handle_declarative_build(&project, build, &conn).await?;
+    }
+
     let dependents = builds::table
       .filter(builds::id.eq(any(dependents)))
       .get_results::<Build>(&conn)?;

@@ -50,8 +50,17 @@ pub struct BuildMetric {
 }
 
 #[derive(
-  QueryableByName, Queryable, Insertable, Debug, Serialize, Deserialize, Identifiable, AsChangeset,
+  QueryableByName,
+  Queryable,
+  Insertable,
+  Debug,
+  Serialize,
+  Deserialize,
+  Identifiable,
+  AsChangeset,
+  Associations,
 )]
+#[belongs_to(Build, foreign_key = "build")]
 #[primary_key(build, name)]
 #[table_name = "buildoutputs"]
 pub struct BuildOutput {
@@ -351,7 +360,15 @@ pub struct JobsetRename {
 }
 
 #[derive(
-  QueryableByName, Queryable, Insertable, Debug, Serialize, Deserialize, Identifiable, AsChangeset,
+  QueryableByName,
+  Queryable,
+  Insertable,
+  Debug,
+  Serialize,
+  Deserialize,
+  Identifiable,
+  AsChangeset,
+  Default,
 )]
 #[primary_key(project, name)]
 #[table_name = "jobsets"]

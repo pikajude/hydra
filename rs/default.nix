@@ -1,4 +1,14 @@
-{ callPackage, fetchgit, makeRustPlatform, rustChannelOf, nix, boost, postgresql95, hydraSrc }:
+{ callPackage
+, fetchgit
+, rustChannelOf
+, nix
+, boost
+, postgresql95
+, pkg-config
+, openssl
+, hydraSrc
+, doDoc ? false
+}:
 
 let
   naersk = callPackage (
@@ -21,7 +31,7 @@ in naersk.buildPackage {
   name = "hydra-scripts";
   version = "0.1.0";
   src = hydraSrc;
-  doDoc = true;
+  inherit doDoc;
 
-  buildInputs = [ boost nix.dev postgresql95 ];
+  buildInputs = [ boost nix.dev openssl pkg-config postgresql95 ];
 }

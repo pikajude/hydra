@@ -211,7 +211,7 @@ rec {
     '';
 
   rustdoc = pkgs.runCommand "hydra-rustdoc-${version}"
-    { doc = build.x86_64-linux.rsScripts.doc;
+    { doc = (build.x86_64-linux.rsScripts.override { doDoc = true; }).doc;
     }
     ''
       mkdir -p $out/share/doc

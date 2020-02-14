@@ -14,6 +14,7 @@ let
     { HYDRA_DBI = cfg.dbi;
       HYDRA_CONFIG = "${baseDir}/hydra.conf";
       HYDRA_DATA = "${baseDir}";
+      RUST_LOG = "hydra=trace";
     };
 
   env =

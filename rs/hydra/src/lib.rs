@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate async_trait;
+#[macro_use]
+extern crate log;
 
 pub extern crate db;
 
@@ -32,11 +34,10 @@ impl Hydra {
       db: pool,
       config: Default::default(),
     };
-    hydra.plugins =
-      FuturesUnordered::from_iter(vec![plugin::github_status::GithubStatus::init(&hydra)])
-        .filter_map(|x| async { x.transpose() })
-        .try_collect::<Vec<_>>()
-        .await?;
+    hydra.plugins = FuturesUnordered::from_iter(vec![plugin::notify::InfluxDB::init(&hydra)])
+      .filter_map(|x| async { x.transpose() })
+      .try_collect::<Vec<_>>()
+      .await?;
     Ok(hydra)
   }
 

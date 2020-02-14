@@ -1,2 +1,7 @@
 [workspace]
-members = ["rs/scripts", "rs/server", "rs/db", "rs/hydra"]
+members = [
+  "rs/db",
+  "rs/hydra",
+  "rs/scripts"
+  # "rs/server"
+]

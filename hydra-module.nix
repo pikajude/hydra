@@ -10,9 +10,12 @@ let
 
   hydraConf = pkgs.writeScript "hydra.conf" cfg.extraConfig;
 
+  hydraRsConf = pkgs.writeScript "hydra.toml" cfg.extraConfigTOML;
+
   hydraEnv =
     { HYDRA_DBI = cfg.dbi;
       HYDRA_CONFIG = "${baseDir}/hydra.conf";
+      HYDRA_RS_CONFIG = "${baseDir}/hydra.toml";
       HYDRA_DATA = "${baseDir}";
       RUST_LOG = "hydra=trace";
     };
@@ -153,6 +156,11 @@ in
         description = "Extra lines for the Hydra configuration.";
       };
 
+      extraConfigTOML = mkOption {
+        type = types.lines;
+        description = "Extra lines for the hydra-rs configuration.";
+      };
+
       extraEnv = mkOption {
         type = types.attrsOf types.str;
         default = {};
@@ -260,6 +268,7 @@ in
           chmod 0750 ${baseDir}
 
           ln -sf ${hydraConf} ${baseDir}/hydra.conf
+          ln -sf ${hydraRsConf} ${baseDir}/hydra.toml
 
           mkdir -m 0700 -p ${baseDir}/www
           chown hydra-www.hydra ${baseDir}/www

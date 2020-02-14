@@ -17,14 +17,14 @@ use plugin::*;
 use serde::de::DeserializeOwned;
 use std::iter::FromIterator;
 use std::sync::Arc;
-pub use toml::Value;
+pub use toml::{value::Table, Value};
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub struct Hydra {
   plugins: Vec<Arc<dyn Plugin>>,
   db: Pool<ConnectionManager<PgConnection>>,
-  raw_config: toml::value::Table,
+  raw_config: Table,
 }
 
 impl Hydra {
@@ -33,7 +33,7 @@ impl Hydra {
     let mut hydra = Self {
       plugins: vec![],
       db: pool,
-      raw_config: Default::default(),
+      raw_config: toml::from_str(&std::fs::read_to_string(std::env::var("HYDRA_RS_CONFIG")?)?)?,
     };
     hydra.plugins = FuturesUnordered::from_iter(vec![plugin::notify::InfluxDB::init(&hydra)])
       .filter_map(|x| async { x.transpose() })
@@ -54,8 +54,12 @@ impl Hydra {
     self.db.get().map_err(Into::into)
   }
 
+  pub fn config(&self) -> &Table {
+    &self.raw_config
+  }
+
   pub fn sub_config<T: DeserializeOwned, S: AsRef<str>>(&self, key: S) -> Option<T> {
-    self.raw_config.get(key.as_ref()).and_then(|x| {
+    self.config().get(key.as_ref()).and_then(|x| {
       x.clone()
         .try_into::<T>()
         .map_err(|e| info!("Unable to parse sub-config: {}", e))

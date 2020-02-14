@@ -62,7 +62,12 @@ pub async fn handle_declarative_build(
     }
 
     for (jobset_name, spec) in decl_spec {
-      update_declarative_jobset(project_, jobset_name, spec, connection).await?;
+      if let Err(e) = update_declarative_jobset(project_, &jobset_name, spec, connection).await {
+        warn!(
+          "failed to process declarative jobset {}:{}: {}",
+          &project_.name, &jobset_name, e
+        );
+      }
     }
   };
 
@@ -89,7 +94,7 @@ pub fn unixtime() -> u64 {
 
 pub async fn update_declarative_jobset(
   project_: &Project,
-  jobset_name: String,
+  jobset_name: &str,
   spec: NewJobset,
   connection: &PgConnection,
 ) -> Result<()> {
@@ -148,7 +153,7 @@ pub async fn update_declarative_jobset(
 
       for (input_name, input) in spec.inputs {
         JobsetInput {
-          jobset: jobset_name.clone(),
+          jobset: jobset_name.to_string(),
           project: project_.name.clone(),
           name: input_name.clone(),
           type_: input.type_,
@@ -159,7 +164,7 @@ pub async fn update_declarative_jobset(
 
         JobsetInputAlt {
           project: project_.name.clone(),
-          jobset: jobset_name.clone(),
+          jobset: jobset_name.to_string(),
           input: input_name,
           altnr: 0,
           value: Some(input.value),

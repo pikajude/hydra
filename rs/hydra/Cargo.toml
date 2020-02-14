@@ -10,6 +10,11 @@ async-trait = "0.1.24"
 futures = "0.3.4"
 dirmod = "0.2.0-alpha"
 log = "0.4.8"
+toml = "0.5.6"
+
+[dependencies.serde]
+version = "1.0.104"
+features = ["derive"]
 
 [dependencies.reqwest]
 version = "0.10.1"

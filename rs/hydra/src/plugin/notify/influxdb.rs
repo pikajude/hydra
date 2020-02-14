@@ -1,30 +1,35 @@
 use crate::plugin::*;
 use reqwest::Client;
+use serde::Deserialize;
 use std::fmt::Display;
 
+#[derive(Deserialize)]
+struct Config {
+  url: String,
+  db: String,
+}
+
 pub struct InfluxDB {
-  url: &'static str,
-  db: &'static str,
+  config: Config,
   client: Client,
 }
 
 #[async_trait]
 impl PluginInit for InfluxDB {
   async fn init(hydra: &Hydra) -> Result<Option<Arc<dyn Plugin>>> {
-    Ok(Some(Arc::new(Self {
-      url: "http://127.0.0.1:8086",
-      db: "hydra",
-      client: Client::new(),
-    })))
+    if let Some(config) = hydra.sub_config("influxdb") {
+      Ok(Some(Arc::new(Self {
+        config,
+        client: Client::new(),
+      })))
+    } else {
+      Ok(None)
+    }
   }
 }
 
 #[async_trait]
 impl Plugin for InfluxDB {
-  fn name(&self) -> &'static str {
-    std::any::type_name::<Self>()
-  }
-
   async fn build_finished(&self, build: &Build, dependents: &[Build]) -> Result<()> {
     let mut payload = String::new();
 
@@ -73,7 +78,10 @@ impl Plugin for InfluxDB {
 
     let req = self
       .client
-      .post(&format!("{}/write?db={}&precision=s", &self.url, &self.db))
+      .post(&format!(
+        "{}/write?db={}&precision=s",
+        &self.config.url, &self.config.db
+      ))
       .header("Content-Type", "application/x-www-form-urlencoded")
       .body(payload);
 

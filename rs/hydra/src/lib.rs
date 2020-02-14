@@ -14,16 +14,17 @@ use db::diesel::{
 pub use db::{diesel, models, schema};
 use futures::stream::{FuturesUnordered, StreamExt, TryStreamExt};
 use plugin::*;
-use std::collections::HashMap;
+use serde::de::DeserializeOwned;
 use std::iter::FromIterator;
 use std::sync::Arc;
+pub use toml::Value;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub struct Hydra {
   plugins: Vec<Arc<dyn Plugin>>,
   db: Pool<ConnectionManager<PgConnection>>,
-  config: HashMap<String, String>,
+  raw_config: toml::value::Table,
 }
 
 impl Hydra {
@@ -32,7 +33,7 @@ impl Hydra {
     let mut hydra = Self {
       plugins: vec![],
       db: pool,
-      config: Default::default(),
+      raw_config: Default::default(),
     };
     hydra.plugins = FuturesUnordered::from_iter(vec![plugin::notify::InfluxDB::init(&hydra)])
       .filter_map(|x| async { x.transpose() })
@@ -53,8 +54,13 @@ impl Hydra {
     self.db.get().map_err(Into::into)
   }
 
-  pub fn config(&self) -> &HashMap<String, String> {
-    &self.config
+  pub fn sub_config<T: DeserializeOwned, S: AsRef<str>>(&self, key: S) -> Option<T> {
+    self.raw_config.get(key.as_ref()).and_then(|x| {
+      x.clone()
+        .try_into::<T>()
+        .map_err(|e| info!("Unable to parse sub-config: {}", e))
+        .ok()
+    })
   }
 }
 

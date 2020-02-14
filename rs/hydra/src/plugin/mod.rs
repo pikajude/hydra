@@ -18,7 +18,10 @@ pub trait Plugin: Send + Sync {
     Ok(())
   }
 
-  fn name(&self) -> &'static str;
+  #[doc(hidden)]
+  fn name(&self) -> &'static str {
+    std::any::type_name::<Self>()
+  }
 }
 
 #[async_trait]

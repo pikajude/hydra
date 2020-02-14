@@ -243,6 +243,11 @@ in
         use-substitutes = ${if cfg.useSubstitutes then "1" else "0"}
       '';
 
+    services.hydra-dev.extraConfigTOML = ''
+      using_frontend_proxy = 1
+      base_uri = ${builtins.toJSON cfg.hydraURL}
+    '';
+
     environment.systemPackages = [ cfg.package ];
 
     environment.variables = hydraEnv;
